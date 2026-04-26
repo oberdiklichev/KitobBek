@@ -4,13 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import uz.itschool.kitobbek.ui.screen.CategoryBooksScreen
+import uz.itschool.kitobbek.ui.screen.ProfileScreen
+import uz.itschool.kitobbek.ui.screen.ProfileViewModel
 import uz.itschool.kitobbek.ui.theme.KitobBekTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +24,57 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KitobBekTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppNavigation()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun AppNavigation() {
+    val navController = rememberNavController()
+    val profileViewModel: ProfileViewModel = viewModel()
+    val uiState by profileViewModel.uiState.collectAsState()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    KitobBekTheme {
-        Greeting("Android")
+    NavHost(navController = navController, startDestination = "profile") {
+        composable("profile") {
+            ProfileScreen(
+                viewModel = profileViewModel,
+                onBackClick = { /* Handle back */ },
+                onSettingsClick = { /* Handle settings */ },
+                onSeeAllClick = { status ->
+                    navController.navigate("category/$status")
+                },
+                onBookClick = { bookId ->
+                    // Handle book click
+                }
+            )
+        }
+        composable(
+            route = "category/{status}",
+            arguments = listOf(navArgument("status") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val status = backStackEntry.arguments?.getString("status") ?: ""
+            val books = when (status) {
+                "READING" -> uiState.readingBooks
+                "READ" -> uiState.readBooks
+                "SAVED" -> uiState.savedBooks
+                else -> emptyList()
+            }
+            val title = when (status) {
+                "READING" -> "O'qilayotgan kitoblar"
+                "READ" -> "O'qilgan kitoblar"
+                "SAVED" -> "Saqlangan kitoblar"
+                else -> "Kitoblar"
+            }
+            CategoryBooksScreen(
+                categoryTitle = title,
+                books = books,
+                onBackClick = { navController.popBackStack() },
+                onBookClick = { bookId ->
+                    // Handle book click
+                }
+            )
+        }
     }
 }

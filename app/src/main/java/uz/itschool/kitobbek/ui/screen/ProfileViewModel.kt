@@ -1,0 +1,52 @@
+package uz.itschool.kitobbek.ui.screen
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import uz.itschool.kitobbek.data.remote.api.RetrofitClient
+import uz.itschool.kitobbek.data.remote.model.response.BookResponse
+
+data class ProfileUiState(
+    val isLoading: Boolean = false,
+    val userName: String = "Aliyev Ali",
+    val email: String = "ali@gmail.com",
+    val readingBooks: List<BookResponse> = emptyList(),
+    val readBooks: List<BookResponse> = emptyList(),
+    val savedBooks: List<BookResponse> = emptyList(),
+    val errorMessage: String? = null
+)
+
+class ProfileViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(ProfileUiState())
+    val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    init {
+        loadProfileData()
+    }
+
+    fun loadProfileData() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+            try {
+                val allBooks = RetrofitClient.apiService.getAllBooks()
+                
+                // API ma'lumotlarini bo'limlarga taqsimlaymiz (namuna sifatida)
+                // Real loyihada bu foydalanuvchi statusiga qarab bo'lishi kerak
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    readingBooks = allBooks.take(3),
+                    readBooks = allBooks.drop(3).take(5),
+                    savedBooks = allBooks.reversed().take(4)
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Ma'lumotlarni yuklashda xatolik: ${e.message}"
+                )
+            }
+        }
+    }
+}
