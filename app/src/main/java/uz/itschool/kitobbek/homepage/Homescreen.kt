@@ -41,16 +41,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import uz.itschool.kitobbek.BottomNavBar
 import uz.itschool.kitobbek.data.remote.model.response.BookResponse
 import uz.itschool.kitobbek.data.remote.model.response.CategoryResponse
-
-
 val NavyDark = Color(0xFF0D1B4B)
 val AccentBlue = Color(0xFF1565C0)
 val LinkColor = Color(0xFF1565C0)
@@ -311,23 +311,18 @@ fun FeaturedBanner(book: BookResponse, onReadClick: () -> Unit) {
             }
         }
 
-        Box(
+        // Book cover image on the right
+        AsyncImage(
+            model = book.image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp)
                 .width(100.dp)
                 .height(150.dp)
                 .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
-                .background(Color(0xFF1976D2)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = book.name.take(1),
-                fontSize = 48.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        )
     }
 }
 
@@ -349,7 +344,7 @@ fun SectionHeader(title: String, onSeeAll: () -> Unit) {
             text = "Barchasini ko'rish",
             fontSize = 13.sp,
             color = LinkColor,
-            modifier = Modifier.clickable { onSeeAll() }
+            modifier = Modifier.clickable { onSeeAll() } //Romanlar yoki qaysiir turga full o'tadigan page
         )
     }
 }

@@ -14,19 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import uz.itschool.kitobbek.data.remote.model.response.BookResponse
-
-// ── 1. Used in Romanlar LazyRow ───────────────────────────────────────────────
 
 @Composable
 fun BookCardItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     Box(
         modifier = Modifier
             .width(170.dp)
+            .height(94.dp)                          // fixed height — no more size jumping
             .shadow(2.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
@@ -35,32 +36,29 @@ fun BookCardItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-            Box(
+            AsyncImage(
+                model = book.image,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(54.dp)
                     .height(74.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(Color(0xFFBBDEFB)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = book.name.take(1),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1565C0)
-                )
-            }
+            )
 
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .height(74.dp),                 // fixed column height
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = book.name,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 16.sp
                 )
                 Text(
                     text = book.author,
@@ -69,7 +67,6 @@ fun BookCardItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.Star,
@@ -85,8 +82,6 @@ fun BookCardItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     }
 }
 
-// ── 2. Used in Darsliklar LazyRow ─────────────────────────────────────────────
-
 @Composable
 fun BookCoverItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     Column(
@@ -95,22 +90,16 @@ fun BookCoverItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
             .clickable { onClick(book) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
+        AsyncImage(
+            model = book.image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .width(90.dp)
                 .height(116.dp)
                 .shadow(2.dp, RoundedCornerShape(8.dp))
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFFE3F2FD)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = book.name.take(1),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1565C0)
-            )
-        }
+        )
         Spacer(Modifier.height(4.dp))
         Text(
             text = book.name,
@@ -122,13 +111,12 @@ fun BookCoverItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     }
 }
 
-// ── 3. Used in search / all-books LazyColumn ──────────────────────────────────
-
 @Composable
 fun BookListItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .height(114.dp)                         // fixed height
             .shadow(1.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
@@ -137,30 +125,25 @@ fun BookListItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 
-            Box(
+            AsyncImage(
+                model = book.image,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(64.dp)
                     .height(90.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFBBDEFB)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = book.name.take(1),
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1565C0)
-                )
-            }
+            )
 
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .height(90.dp),                 // fixed column height
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = book.name, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(text = book.author, fontSize = 12.sp, color = Color(0xFF757575))
                 Text(text = book.description, fontSize = 11.sp, color = Color(0xFF9E9E9E), maxLines = 2, overflow = TextOverflow.Ellipsis)
-                Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFC107), modifier = Modifier.size(14.dp))
                     Spacer(Modifier.width(3.dp))
