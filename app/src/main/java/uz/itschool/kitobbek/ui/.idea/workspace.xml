@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="93a69eb0-d951-41fb-a5e5-7ce2bd71ae67" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/theme/homepage/Book.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/theme/homepage/Bookitems.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../../.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../../../../.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../../../../.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../../../build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../MainActivity.kt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../../../../.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="3CtF21XjQeburGsr0CkygM8pUzf" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "bosh__sahifa",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/USER/AndroidStudioProjects/KitobBek/app/src/main/java/uz/itschool/kitobbek/ui"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="93a69eb0-d951-41fb-a5e5-7ce2bd71ae67" name="Changes" comment="" />
+      <created>1777196748679</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1777196748679</updated>
+    </task>
+    <servers />
+  </component>
+</project>

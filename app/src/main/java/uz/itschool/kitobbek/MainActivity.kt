@@ -4,15 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import uz.itschool.kitobbek.homepage.HomeScreen
 import uz.itschool.kitobbek.ui.screen.CategoryBooksScreen
 import uz.itschool.kitobbek.ui.screen.ProfileScreen
 import uz.itschool.kitobbek.ui.screen.ProfileViewModel
@@ -36,45 +41,65 @@ fun AppNavigation() {
     val profileViewModel: ProfileViewModel = viewModel()
     val uiState by profileViewModel.uiState.collectAsState()
 
-    NavHost(navController = navController, startDestination = "profile") {
-        composable("profile") {
-            ProfileScreen(
-                viewModel = profileViewModel,
-                onBackClick = { /* Handle back */ },
-                onSettingsClick = { /* Handle settings */ },
-                onSeeAllClick = { status ->
-                    navController.navigate("category/$status")
-                },
-                onBookClick = { bookId ->
-                    // Handle book click
-                }
-            )
-        }
-        composable(
-            route = "category/{status}",
-            arguments = listOf(navArgument("status") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val status = backStackEntry.arguments?.getString("status") ?: ""
-            val books = when (status) {
-                "READING" -> uiState.readingBooks
-                "READ" -> uiState.readBooks
-                "SAVED" -> uiState.savedBooks
-                else -> emptyList()
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = "home", // Dastur Home dan boshlanadi
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            // 1. Home sahifasi
+            composable("home") {
+                HomeScreen(navController = navController)
             }
-            val title = when (status) {
-                "READING" -> "O'qilayotgan kitoblar"
-                "READ" -> "O'qilgan kitoblar"
-                "SAVED" -> "Saqlangan kitoblar"
-                else -> "Kitoblar"
+
+            // 2. Profil sahifasi
+            composable("profile") {
+                ProfileScreen(
+                    viewModel = profileViewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onSettingsClick = { /* Sozlamalar */ },
+                    onSeeAllClick = { status ->
+                        navController.navigate("category/$status")
+                    },
+                    onBookClick = { bookId ->
+                        // Kitob ustiga bosilganda
+                    }
+                )
             }
-            CategoryBooksScreen(
-                categoryTitle = title,
-                books = books,
-                onBackClick = { navController.popBackStack() },
-                onBookClick = { bookId ->
-                    // Handle book click
+
+            // 3. Kategoriya bo'yicha kitoblar
+            composable(
+                route = "category/{status}",
+                arguments = listOf(navArgument("status") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val status = backStackEntry.arguments?.getString("status") ?: ""
+                val books = when (status) {
+                    "READING" -> uiState.readingBooks
+                    "READ" -> uiState.readBooks
+                    "SAVED" -> uiState.savedBooks
+                    else -> emptyList()
                 }
-            )
+                val title = when (status) {
+                    "READING" -> "O'qilayotgan kitoblar"
+                    "READ" -> "O'qilgan kitoblar"
+                    "SAVED" -> "Saqlangan kitoblar"
+                    else -> "Kitoblar"
+                }
+                CategoryBooksScreen(
+                    categoryTitle = title,
+                    books = books,
+                    onBackClick = { navController.popBackStack() },
+                    onBookClick = { bookId ->
+                        // Kitob ustiga bosilganda
+                    }
+                )
+            }
+
+            // Boshqa sahifalar (Placeholder)
+            composable("search")     { /* SearchScreen() */ }
+            composable("write")      { /* WriteScreen() */ }
+            composable("bookmarks")  { /* BookmarksScreen() */ }
+            composable("language")   { /* LanguageScreen() */ }
         }
     }
 }
