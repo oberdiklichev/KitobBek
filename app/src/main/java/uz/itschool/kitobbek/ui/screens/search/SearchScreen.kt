@@ -1,5 +1,6 @@
 package uz.itschool.kitobbek.ui.screens.search
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,7 +22,8 @@ import uz.itschool.kitobbek.data.remote.model.response.BookResponse
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModel = viewModel()
+    viewModel: SearchViewModel = viewModel(),
+    onBookClick: (Int) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
     val searchResults by viewModel.searchResult.collectAsState()
@@ -59,7 +61,7 @@ fun SearchScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(items = searchResults) { book ->
-                    BookItem(book)
+                    BookItem(book, onBookClick)
                 }
             }
         }
@@ -67,9 +69,11 @@ fun SearchScreen(
 }
 
 @Composable
-fun BookItem(book: BookResponse) {
+fun BookItem(book: BookResponse, onClick: (Int) -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick(book.id) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(

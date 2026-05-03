@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import uz.itschool.kitobbek.data.local.Prefs
 import uz.itschool.kitobbek.data.remote.api.RetrofitClient
 import uz.itschool.kitobbek.data.remote.model.response.BookResponse
 
@@ -19,7 +20,7 @@ data class ProfileUiState(
     val errorMessage: String? = null
 )
 
-class ProfileViewModel : ViewModel() {
+class ProfileViewModel(private val prefs: Prefs) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
@@ -32,12 +33,13 @@ class ProfileViewModel : ViewModel() {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             try {
                 val allBooks = RetrofitClient.apiService.getAllBooks()
+                val savedIds = prefs.getSavedBookIds()
                 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    readingBooks = allBooks.take(3),
-                    readBooks = allBooks.drop(3).take(5),
-                    savedBooks = allBooks.reversed().take(4)
+                    readingBooks = emptyList(),
+                    readBooks = emptyList(),
+                    savedBooks = allBooks.filter { it.id.toString() in savedIds }
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

@@ -20,4 +20,20 @@ class Prefs(context: Context) {
     
     fun getUserName(): String = prefs.getString("name", "") ?: ""
     fun getUserEmail(): String = prefs.getString("email", "") ?: ""
+
+    fun saveBookId(id: Int) {
+        val savedIds = getSavedBookIds().toMutableSet()
+        savedIds.add(id.toString())
+        prefs.edit().putStringSet("saved_books", savedIds).apply()
+    }
+
+    fun removeBookId(id: Int) {
+        val savedIds = getSavedBookIds().toMutableSet()
+        savedIds.remove(id.toString())
+        prefs.edit().putStringSet("saved_books", savedIds).apply()
+    }
+
+    fun getSavedBookIds(): Set<String> = prefs.getStringSet("saved_books", emptySet()) ?: emptySet()
+    
+    fun isBookSaved(id: Int): Boolean = getSavedBookIds().contains(id.toString())
 }

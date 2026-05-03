@@ -23,6 +23,8 @@ private val SelectedItemBg = Color(0xFF1A237E)
 
 @Composable
 fun AppDrawer(
+    userName: String,
+    userEmail: String,
     currentRoute: String?,
     onNavigate: (String) -> Unit,
     onCloseDrawer: () -> Unit
@@ -56,13 +58,13 @@ fun AppDrawer(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Azizov Ali",
+                    text = userName,
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "abcdef@gmail.com",
+                    text = userEmail,
                     color = Color.White.copy(alpha = 0.7f),
                     fontSize = 14.sp
                 )

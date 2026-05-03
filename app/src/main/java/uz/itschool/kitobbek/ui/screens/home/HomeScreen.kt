@@ -40,7 +40,8 @@ val LinkColor = Color(0xFF1565C0)
 fun HomeScreen(
     navController: NavController,
     vm: HomeViewModel = viewModel(),
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    onBookClick: (Int) -> Unit
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
@@ -101,7 +102,7 @@ fun HomeScreen(
                 // MainBook faqat null bo'lmaganda ko'rsatiladi
                 vm.mainBook?.let { book ->
                     item {
-                        FeaturedBanner(book = book, onReadClick = { /*TODO*/ })
+                        FeaturedBanner(book = book, onReadClick = { onBookClick(book.id) })
                         Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
@@ -114,7 +115,7 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(items = vm.allBooks, key = { it.id }) { book ->
-                            BookCardItem(book = book, onClick = { _ -> /* TODO */ })
+                            BookCardItem(book = book, onClick = { b -> onBookClick(b.id) })
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))
@@ -128,7 +129,7 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(items = darsliklar, key = { it.id }) { book ->
-                            BookCoverItem(book = book, onClick = { _ -> /* TODO */ })
+                            BookCoverItem(book = book, onClick = { b -> onBookClick(b.id) })
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))

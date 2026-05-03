@@ -12,13 +12,13 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,6 +37,8 @@ import uz.itschool.kitobbek.ui.components.TopBar
 import uz.itschool.kitobbek.ui.components.AppDrawer
 import uz.itschool.kitobbek.ui.screens.profile.ProfileScreen
 import uz.itschool.kitobbek.ui.screens.profile.ProfileViewModel
+import uz.itschool.kitobbek.ui.screens.details.BookDetailsScreen
+import uz.itschool.kitobbek.ui.screens.details.BookDetailsViewModel
 import uz.itschool.kitobbek.ui.screens.category.CategoryBooksScreen
 import uz.itschool.kitobbek.ui.theme.KitobBekTheme
 
@@ -58,8 +60,10 @@ fun AppNavigation() {
     val context = LocalContext.current
     val prefs = remember { Prefs(context) }
     
-    val profileViewModel: ProfileViewModel = viewModel()
+    val profileViewModel: ProfileViewModel = remember { ProfileViewModel(prefs) }
     val uiState by profileViewModel.uiState.collectAsState()
+    
+    val bookDetailsViewModel: BookDetailsViewModel = remember { BookDetailsViewModel(prefs) }
     
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -74,6 +78,8 @@ fun AppNavigation() {
         gesturesEnabled = currentRoute != "welcome" && currentRoute != "login" && currentRoute != "register",
         drawerContent = {
             AppDrawer(
+                userName = prefs.getUserName(),
+                userEmail = prefs.getUserEmail(),
                 currentRoute = currentRoute,
                 onNavigate = { route ->
                     navController.navigate(route) {
@@ -122,11 +128,17 @@ fun AppNavigation() {
             composable("home") {
                 HomeScreen(
                     navController = navController,
-                    onMenuClick = { scope.launch { drawerState.open() } }
+                    onMenuClick = { scope.launch { drawerState.open() } },
+                    onBookClick = { bookId ->
+                        navController.navigate("details/$bookId")
+                    }
                 )
             }
 
             composable("profile") {
+                LaunchedEffect(Unit) {
+                    profileViewModel.loadProfileData()
+                }
                 ProfileScreen(
                     viewModel = profileViewModel,
                     onBackClick = { navController.popBackStack() },
@@ -134,8 +146,8 @@ fun AppNavigation() {
                     onSeeAllClick = { status ->
                         navController.navigate("category/$status")
                     },
-                    onBookClick = { _ ->
-                        // Kitob ustiga bosilganda
+                    onBookClick = { bookId ->
+                        navController.navigate("details/$bookId")
                     }
                 )
             }
@@ -161,9 +173,21 @@ fun AppNavigation() {
                     categoryTitle = title,
                     books = books,
                     onBackClick = { navController.popBackStack() },
-                    onBookClick = { _ ->
-                        // Kitob ustiga bosilganda
+                    onBookClick = { bookId ->
+                        navController.navigate("details/$bookId")
                     }
+                )
+            }
+
+            composable(
+                route = "details/{bookId}",
+                arguments = listOf(navArgument("bookId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
+                BookDetailsScreen(
+                    bookId = bookId,
+                    viewModel = bookDetailsViewModel,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
 
@@ -180,7 +204,11 @@ fun AppNavigation() {
                     bottomBar = { BottomNavBar(navController = navController) }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        SearchScreen()
+                        SearchScreen(
+                            onBookClick = { bookId ->
+                                navController.navigate("details/$bookId")
+                            }
+                        )
                     }
                 }
             }
