@@ -14,7 +14,7 @@ class HomeViewModel : ViewModel() {
 
     var allBooks by mutableStateOf(listOf<BookResponse>())
     var categories by mutableStateOf(listOf<CategoryResponse>())
-    var mainBook by mutableStateOf(BookResponse())
+    var mainBook by mutableStateOf<BookResponse?>(null)
     var isLoading by mutableStateOf(true)
     var error by mutableStateOf("")
 

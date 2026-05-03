@@ -51,6 +51,7 @@ import coil.compose.AsyncImage
 import uz.itschool.kitobbek.BottomNavBar
 import uz.itschool.kitobbek.data.remote.model.response.BookResponse
 import uz.itschool.kitobbek.data.remote.model.response.CategoryResponse
+
 val NavyDark = Color(0xFF0D1B4B)
 val AccentBlue = Color(0xFF1565C0)
 val LinkColor = Color(0xFF1565C0)
@@ -67,7 +68,7 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = viewModel()) {
         topBar = {
             TopBar(
                 onMenuClick = { /*TODO*/ },
-                onProfileClick = { /*TODO*/ }
+                onProfileClick = { navController.navigate("profile") }
             )
         },
         bottomBar = { BottomNavBar(navController = navController) }
@@ -112,9 +113,12 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = viewModel()) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                item {
-                    FeaturedBanner(book = vm.mainBook, onReadClick = { /*TODO*/ })
-                    Spacer(modifier = Modifier.height(24.dp))
+                // MainBook faqat null bo'lmaganda ko'rsatiladi
+                vm.mainBook?.let { book ->
+                    item {
+                        FeaturedBanner(book = book, onReadClick = { /*TODO*/ })
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
                 }
 
                 item {
@@ -344,7 +348,7 @@ fun SectionHeader(title: String, onSeeAll: () -> Unit) {
             text = "Barchasini ko'rish",
             fontSize = 13.sp,
             color = LinkColor,
-            modifier = Modifier.clickable { onSeeAll() } //Romanlar yoki qaysiir turga full o'tadigan page
+            modifier = Modifier.clickable { onSeeAll() }
         )
     }
 }
