@@ -84,7 +84,8 @@ fun RegisterScreen(
             Button(
                 onClick = {
                     if (name.isNotBlank() && email.isNotBlank() && password.isNotEmpty() && password == confirmPassword) {
-                        prefs.saveUser(name, surname, email)
+                        // Dummy ID for now, as we don't have real registration API response usage here yet
+                        prefs.saveUser(1, name, email)
                         onRegisterSuccess()
                     }
                 },

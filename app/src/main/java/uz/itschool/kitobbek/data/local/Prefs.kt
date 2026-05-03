@@ -6,15 +6,17 @@ import android.content.SharedPreferences
 class Prefs(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("kitobbek_prefs", Context.MODE_PRIVATE)
 
-    fun saveUser(name: String, surname: String, email: String) {
+    fun saveUser(id: Int, name: String, email: String) {
         prefs.edit().apply {
+            putInt("userId", id)
             putString("name", name)
-            putString("surname", surname)
             putString("email", email)
             putBoolean("is_registered", true)
             apply()
         }
     }
+
+    fun getUserId(): Int = prefs.getInt("userId", 0)
 
     fun isRegistered(): Boolean = prefs.getBoolean("is_registered", false)
     

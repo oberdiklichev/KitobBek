@@ -41,7 +41,9 @@ import uz.itschool.kitobbek.ui.screens.profile.ProfileViewModel
 import uz.itschool.kitobbek.ui.screens.details.BookDetailsScreen
 import uz.itschool.kitobbek.ui.screens.details.BookDetailsViewModel
 import uz.itschool.kitobbek.ui.screens.category.CategoryBooksScreen
+import uz.itschool.kitobbek.ui.screens.category.CategoryViewModel
 import uz.itschool.kitobbek.ui.screens.pdf.PdfReaderScreen
+import uz.itschool.kitobbek.ui.screens.articles.ArticlesScreen
 import uz.itschool.kitobbek.ui.theme.KitobBekTheme
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -69,18 +71,23 @@ fun AppNavigation() {
     val uiState by profileViewModel.uiState.collectAsState()
     
     val bookDetailsViewModel: BookDetailsViewModel = remember { BookDetailsViewModel(prefs) }
+    val categoryViewModel: CategoryViewModel = remember { CategoryViewModel(prefs) }
     
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val currentStatus = navBackStackEntry?.arguments?.getString("status")
 
     val startDestination = if (prefs.isRegistered()) "home" else "welcome"
 
+    val mainRoutes = listOf("home", "search", "write", "language")
+    val isMainRoute = currentRoute in mainRoutes || (currentRoute == "category/{status}" && currentStatus == "SAVED")
+
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = currentRoute != "welcome" && currentRoute != "login" && currentRoute != "register",
+        gesturesEnabled = isMainRoute,
         drawerContent = {
             AppDrawer(
                 userName = prefs.getUserName(),
@@ -162,29 +169,29 @@ fun AppNavigation() {
                 arguments = listOf(navArgument("status") { type = NavType.StringType })
             ) { backStackEntry ->
                 val status = backStackEntry.arguments?.getString("status") ?: ""
+                val categoryUiState by categoryViewModel.uiState.collectAsState()
+
+                val profileStatuses = listOf("READING", "READ", "SAVED")
                 
-                LaunchedEffect(status) {
-                    profileViewModel.loadProfileData()
+                LaunchedEffect(status, uiState) {
+                    if (status in profileStatuses) {
+                        categoryViewModel.loadBooksByStatus(
+                            status,
+                            uiState.readingBooks,
+                            uiState.readBooks,
+                            uiState.savedBooks
+                        )
+                    } else {
+                        categoryViewModel.loadBooksByCategory(status)
+                    }
                 }
 
-                val books = when (status) {
-                    "READING" -> uiState.readingBooks
-                    "READ" -> uiState.readBooks
-                    "SAVED" -> uiState.savedBooks
-                    else -> emptyList()
-                }
-                val title = when (status) {
-                    "READING" -> "O'qilayotgan kitoblar"
-                    "READ" -> "O'qilgan kitoblar"
-                    "SAVED" -> "Saqlangan kitoblar"
-                    else -> "Kitoblar"
-                }
-                
                 val isSaved = status == "SAVED"
 
                 CategoryBooksScreen(
-                    categoryTitle = title,
-                    books = books,
+                    categoryTitle = categoryUiState.title,
+                    books = categoryUiState.books,
+                    isLoading = categoryUiState.isLoading,
                     onBackClick = { 
                         if (isSaved) scope.launch { drawerState.open() }
                         else navController.popBackStack() 
@@ -264,7 +271,20 @@ fun AppNavigation() {
                     }
                 }
             }
-            composable("write")      { /* WriteScreen() */ }
+            composable("write") {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    containerColor = Color.White,
+                    bottomBar = { BottomNavBar(navController = navController) }
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        ArticlesScreen(
+                            onMenuClick = { scope.launch { drawerState.open() } },
+                            onProfileClick = { navController.navigate("profile") }
+                        )
+                    }
+                }
+            }
             composable("language")   { /* LanguageScreen() */ }
         }
     }

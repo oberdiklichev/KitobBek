@@ -42,9 +42,23 @@ fun BookDetailsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val prefs = remember { Prefs(context) }
+    var selectedTab by remember { mutableIntStateOf(0) }
+    var showAddComment by remember { mutableStateOf(false) }
 
     LaunchedEffect(bookId) {
         viewModel.loadBookDetails(bookId)
+    }
+    
+    if (showAddComment && uiState.book != null) {
+        AddCommentScreen(
+            bookName = uiState.book!!.name,
+            onBackClick = { showAddComment = false },
+            onSendClick = { text, rating ->
+                viewModel.sendComment(text, rating)
+                showAddComment = false
+            }
+        )
+        return
     }
 
     Scaffold(
@@ -205,36 +219,109 @@ fun BookDetailsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         val quotesCount = remember(bookId) { prefs.getQuotes(bookId).size }
-                        DescriptionTab(text = "Tavsifi", isSelected = true)
-                        DescriptionTab(text = "Sharhlar(${uiState.comments.size})", isSelected = false)
-                        DescriptionTab(text = "Iqtiboslar($quotesCount)", isSelected = false)
+                        DescriptionTab(
+                            text = "Tavsifi",
+                            isSelected = selectedTab == 0,
+                            onClick = { selectedTab = 0 }
+                        )
+                        DescriptionTab(
+                            text = "Sharhlar(${uiState.comments.size})",
+                            isSelected = selectedTab == 1,
+                            onClick = { selectedTab = 1 }
+                        )
+                        DescriptionTab(
+                            text = "Iqtiboslar($quotesCount)",
+                            isSelected = selectedTab == 2,
+                            onClick = { selectedTab = 2 }
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Book Meta Info
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        MetaInfoItem(iconRes = R.drawable.file_ico, text = "${book.countPage} bet")
-                        if (!book.audio.isNullOrEmpty()) {
-                            MetaInfoItem(iconRes = R.drawable.headphone_ico, text = "12 soat")
+                    when (selectedTab) {
+                        0 -> {
+                            // Book Meta Info
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                MetaInfoItem(iconRes = R.drawable.file_ico, text = "${book.countPage} bet")
+                                if (!book.audio.isNullOrEmpty()) {
+                                    MetaInfoItem(iconRes = R.drawable.headphone_ico, text = "12 soat")
+                                }
+                                MetaInfoItem(iconRes = R.drawable.internet_ico, text = book.lang)
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            Text(
+                                text = book.description,
+                                fontSize = 14.sp,
+                                color = Color.Gray,
+                                lineHeight = 22.sp,
+                                modifier = Modifier.padding(horizontal = 24.dp)
+                            )
                         }
-                        MetaInfoItem(iconRes = R.drawable.internet_ico, text = book.lang)
+                        1 -> {
+                            // Sharhlar (Comments)
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp)
+                            ) {
+                                Button(
+                                    onClick = { showAddComment = true },
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = NavyDark),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text("Sharh qoldirish", color = Color.White)
+                                }
+
+                                if (uiState.comments.isEmpty()) {
+                                    Text(
+                                        text = "Hozircha sharhlar yo'q",
+                                        color = Color.Gray,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                } else {
+                                    uiState.comments.forEach { comment ->
+                                        CommentItem(comment.username, comment.text)
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                    }
+                                }
+                            }
+                        }
+                        2 -> {
+                            // Iqtiboslar (Quotes)
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp)
+                            ) {
+                                val quotes = remember(bookId) { prefs.getQuotes(bookId) }
+                                if (quotes.isEmpty()) {
+                                    Text(
+                                        text = "Hozircha iqtiboslar yo'q",
+                                        color = Color.Gray,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                } else {
+                                    quotes.forEach { quoteData ->
+                                        val parts = quoteData.split("|")
+                                        if (parts.size >= 2) {
+                                            QuoteItem(page = parts[0], text = parts[1])
+                                            Spacer(modifier = Modifier.height(12.dp))
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Text(
-                        text = book.description,
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        lineHeight = 22.sp,
-                        modifier = Modifier.padding(horizontal = 24.dp)
-                    )
                     
                     Spacer(modifier = Modifier.height(24.dp))
                 }
@@ -244,14 +331,55 @@ fun BookDetailsScreen(
 }
 
 @Composable
-fun DescriptionTab(text: String, isSelected: Boolean) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+fun CommentItem(userName: String, text: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = userName, fontWeight = FontWeight.Bold, color = NavyDark, fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = text, color = Color.DarkGray, fontSize = 13.sp)
+        }
+    }
+}
+
+@Composable
+fun QuoteItem(page: String, text: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE0F7FA)),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = "$page-betdan iqtibos", fontWeight = FontWeight.Bold, color = Color(0xFF006064), fontSize = 12.sp)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "\"$text\"", color = Color.Black, fontSize = 14.sp, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
+        }
+    }
+}
+
+@Composable
+fun DescriptionTab(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() }
+    ) {
         Text(
             text = text,
             color = if (isSelected) Color(0xFF4DD0E1) else Color.Gray,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             fontSize = 16.sp
         )
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(2.dp)
+                    .background(Color(0xFF4DD0E1))
+            )
+        }
     }
 }
 

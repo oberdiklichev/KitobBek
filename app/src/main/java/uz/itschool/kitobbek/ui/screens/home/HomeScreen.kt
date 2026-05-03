@@ -108,7 +108,10 @@ fun HomeScreen(
                 }
 
                 item {
-                    SectionHeader(title = "Romanlar", onSeeAll = { /*TODO*/ })
+                    SectionHeader(
+                        title = "Romanlar",
+                        onSeeAll = { navController.navigate("category/Romanlar") }
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -122,7 +125,10 @@ fun HomeScreen(
                 }
 
                 item {
-                    SectionHeader(title = "Darsliklar", onSeeAll = { /*TODO*/ })
+                    SectionHeader(
+                        title = "Darsliklar",
+                        onSeeAll = { navController.navigate("category/Darsliklar") }
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),

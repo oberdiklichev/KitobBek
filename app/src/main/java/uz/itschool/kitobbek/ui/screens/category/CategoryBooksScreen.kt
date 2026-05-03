@@ -26,6 +26,7 @@ import uz.itschool.kitobbek.ui.screens.profile.SecondaryText
 fun CategoryBooksScreen(
     categoryTitle: String,
     books: List<BookResponse>,
+    isLoading: Boolean = false,
     onBackClick: () -> Unit,
     onBookClick: (Int) -> Unit,
     bottomBar: @Composable () -> Unit = {},
@@ -42,7 +43,11 @@ fun CategoryBooksScreen(
         },
         bottomBar = bottomBar
     ) { innerPadding ->
-        if (books.isEmpty()) {
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = PrimaryDarkBlue)
+            }
+        } else if (books.isEmpty()) {
             val emptyMessage = when (categoryTitle) {
                 "Saqlangan kitoblar" -> "Saqlangan kitoblar yo'q"
                 "O'qilayotgan kitoblar" -> "Hozircha o'qilayotgan kitoblar yo'q"
