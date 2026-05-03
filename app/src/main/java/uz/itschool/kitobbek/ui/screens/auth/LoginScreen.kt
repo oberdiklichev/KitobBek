@@ -45,7 +45,7 @@ fun LoginScreen(
             modifier = Modifier.size(60.dp)
         )
         Text(
-            text = "HandyBook",
+            text = "KitobBek",
             color = NavyDark,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold

@@ -52,7 +52,7 @@ fun WelcomeScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "HandyBook",
+                text = "KitobBek",
                 color = Color.White,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
