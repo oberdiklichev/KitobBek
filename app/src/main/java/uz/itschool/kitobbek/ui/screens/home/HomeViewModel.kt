@@ -1,4 +1,4 @@
-package uz.itschool.kitobbek.homepage
+package uz.itschool.kitobbek.ui.screens.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

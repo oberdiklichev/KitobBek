@@ -1,4 +1,4 @@
-package uz.itschool.kitobbek.ui.screen
+package uz.itschool.kitobbek.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,8 +33,6 @@ class ProfileViewModel : ViewModel() {
             try {
                 val allBooks = RetrofitClient.apiService.getAllBooks()
                 
-                // API ma'lumotlarini bo'limlarga taqsimlaymiz (namuna sifatida)
-                // Real loyihada bu foydalanuvchi statusiga qarab bo'lishi kerak
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     readingBooks = allBooks.take(3),

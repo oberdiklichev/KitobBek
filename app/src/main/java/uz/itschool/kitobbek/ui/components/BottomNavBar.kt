@@ -1,4 +1,4 @@
-package uz.itschool.kitobbek
+package uz.itschool.kitobbek.ui.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -11,13 +11,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-
-// ─── Navigation Destinations ────────────────────────────────────────────────
+import uz.itschool.kitobbek.R
 
 sealed class BottomNavItem(
     val route: String,
     val label: String,
-    val iconRes: Int          // ← point each to your drawable resource
+    val iconRes: Int
 ) {
     object Home       : BottomNavItem("home",       "Bosh sahifa", R.drawable.book_ico)
     object Search     : BottomNavItem("search",     "Qidirish",    R.drawable.search_ico)
@@ -34,23 +33,10 @@ private val bottomNavItems = listOf(
     BottomNavItem.Language
 )
 
-// ─── Colours (match the screenshot) ─────────────────────────────────────────
-
-private val NavActiveColor   = Color(0xFF1A237E)   // dark navy
-private val NavInactiveColor = Color(0xFFB0BEC5)   // light grey
+private val NavActiveColor   = Color(0xFF1A237E)
+private val NavInactiveColor = Color(0xFFB0BEC5)
 private val NavBackground    = Color.White
 
-// ─── Composable ─────────────────────────────────────────────────────────────
-
-/**
- * Reusable bottom navigation bar.
- *
- * Usage – paste inside every Scaffold:
- *
- *   Scaffold(
- *       bottomBar = { BottomNavBar(navController = navController) }
- *   ) { ... }
- */
 @Composable
 fun BottomNavBar(navController: NavController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -69,7 +55,6 @@ fun BottomNavBar(navController: NavController) {
                 onClick  = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            // Pop up to start so back-stack doesn't grow infinitely
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -86,7 +71,7 @@ fun BottomNavBar(navController: NavController) {
                         modifier           = Modifier.size(24.dp)
                     )
                 },
-                label = null,                          // no labels → icon-only bar
+                label = null,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor   = NavActiveColor,
                     unselectedIconColor = NavInactiveColor,

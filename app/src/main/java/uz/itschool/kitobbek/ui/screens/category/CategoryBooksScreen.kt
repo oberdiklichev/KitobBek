@@ -1,4 +1,4 @@
-package uz.itschool.kitobbek.ui.screen
+package uz.itschool.kitobbek.ui.screens.category
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -13,6 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uz.itschool.kitobbek.data.remote.model.response.BookResponse
+import uz.itschool.kitobbek.ui.screens.profile.EmptyView
+import uz.itschool.kitobbek.ui.screens.profile.GridBookCard
+import uz.itschool.kitobbek.ui.screens.profile.PrimaryDarkBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

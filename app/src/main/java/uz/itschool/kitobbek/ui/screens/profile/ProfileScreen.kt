@@ -1,4 +1,4 @@
-package uz.itschool.kitobbek.ui.screen
+package uz.itschool.kitobbek.ui.screens.profile
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

@@ -1,4 +1,4 @@
-package uz.itschool.kitobbek.homepage
+package uz.itschool.kitobbek.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +27,7 @@ fun BookCardItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     Box(
         modifier = Modifier
             .width(170.dp)
-            .height(94.dp)                          // fixed height — no more size jumping
+            .height(94.dp)
             .shadow(2.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
@@ -49,7 +49,7 @@ fun BookCardItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .height(74.dp),                 // fixed column height
+                    .height(74.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -116,7 +116,7 @@ fun BookListItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(114.dp)                         // fixed height
+            .height(114.dp)
             .shadow(1.dp, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
@@ -138,7 +138,7 @@ fun BookListItem(book: BookResponse, onClick: (BookResponse) -> Unit) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .height(90.dp),                 // fixed column height
+                    .height(90.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = book.name, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
