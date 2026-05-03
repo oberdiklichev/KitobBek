@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -17,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import uz.itschool.kitobbek.ui.screen.SearchScreen
 import uz.itschool.kitobbek.ui.screens.home.HomeScreen
 import uz.itschool.kitobbek.ui.screens.profile.ProfileScreen
 import uz.itschool.kitobbek.ui.screens.profile.ProfileViewModel
@@ -44,7 +46,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "search"
     ) {
         composable("home") {
             HomeScreen(navController = navController)
@@ -91,7 +93,13 @@ fun AppNavigation() {
             )
         }
 
-        composable("search")     { /* SearchScreen() */ }
+        composable("search") {
+            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    SearchScreen()
+                }
+            }
+        }
         composable("write")      { /* WriteScreen() */ }
         composable("bookmarks")  { /* BookmarksScreen() */ }
         composable("language")   { /* LanguageScreen() */ }
