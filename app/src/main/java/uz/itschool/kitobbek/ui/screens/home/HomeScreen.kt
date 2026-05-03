@@ -111,7 +111,7 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = viewModel()) {
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(items = vm.allBooks, key = { it.id }) { book ->
-                            BookCardItem(book = book, onClick = { /*TODO*/ })
+                            BookCardItem(book = book, onClick = { _ -> /* TODO */ })
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))
@@ -125,7 +125,7 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = viewModel()) {
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(items = darsliklar, key = { it.id }) { book ->
-                            BookCoverItem(book = book, onClick = { /*TODO*/ })
+                            BookCoverItem(book = book, onClick = { _ -> /* TODO */ })
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))
