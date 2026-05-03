@@ -1,4 +1,4 @@
-package uz.itschool.kitobbek.ui.screen
+package uz.itschool.kitobbek.ui.screens.search
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import uz.itschool.kitobbek.data.remote.model.response.BookResponse
-import uz.itschool.kitobbek.ui.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +58,7 @@ fun SearchScreen(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(searchResults) { book ->
+                items(items = searchResults) { book ->
                     BookItem(book)
                 }
             }

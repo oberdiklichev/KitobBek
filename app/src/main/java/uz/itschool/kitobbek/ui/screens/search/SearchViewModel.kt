@@ -1,4 +1,4 @@
-package uz.itschool.kitobbek.ui.viewmodel
+package uz.itschool.kitobbek.ui.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

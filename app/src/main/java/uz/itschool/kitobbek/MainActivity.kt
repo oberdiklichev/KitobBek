@@ -18,7 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import uz.itschool.kitobbek.ui.screen.SearchScreen
+import uz.itschool.kitobbek.ui.screens.search.SearchScreen
 import uz.itschool.kitobbek.ui.screens.home.HomeScreen
 import uz.itschool.kitobbek.ui.screens.profile.ProfileScreen
 import uz.itschool.kitobbek.ui.screens.profile.ProfileViewModel
