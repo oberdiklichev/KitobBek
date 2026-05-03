@@ -30,15 +30,22 @@ class ProfileViewModel(private val prefs: Prefs) : ViewModel() {
 
     fun loadProfileData() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+            _uiState.value = _uiState.value.copy(
+                isLoading = true, 
+                errorMessage = null,
+                userName = prefs.getUserName(),
+                email = prefs.getUserEmail()
+            )
             try {
                 val allBooks = RetrofitClient.apiService.getAllBooks()
                 val savedIds = prefs.getSavedBookIds()
+                val readingIds = prefs.getReadingBookIds()
+                val readIds = prefs.getReadBookIds()
                 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    readingBooks = emptyList(),
-                    readBooks = emptyList(),
+                    readingBooks = allBooks.filter { it.id.toString() in readingIds },
+                    readBooks = allBooks.filter { it.id.toString() in readIds },
                     savedBooks = allBooks.filter { it.id.toString() in savedIds }
                 )
             } catch (e: Exception) {

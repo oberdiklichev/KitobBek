@@ -21,7 +21,7 @@ sealed class BottomNavItem(
     object Home       : BottomNavItem("home",       "Bosh sahifa", R.drawable.book_ico)
     object Search     : BottomNavItem("search",     "Qidirish",    R.drawable.search_ico)
     object Write      : BottomNavItem("write",      "Yozish",      R.drawable.feather_ico)
-    object Bookmarks  : BottomNavItem("bookmarks",  "Saqlangan",   R.drawable.bookmark_ico)
+    object Bookmarks  : BottomNavItem("category/SAVED", "Saqlangan",   R.drawable.bookmark_ico)
     object Language   : BottomNavItem("language",   "Til",         R.drawable.internet_ico)
 }
 
@@ -41,6 +41,7 @@ private val NavBackground    = Color.White
 fun BottomNavBar(navController: NavController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute   = backStackEntry?.destination?.route
+    val currentStatus  = backStackEntry?.arguments?.getString("status")
 
     NavigationBar(
         containerColor = NavBackground,
@@ -48,7 +49,11 @@ fun BottomNavBar(navController: NavController) {
         modifier        = Modifier.height(64.dp)
     ) {
         bottomNavItems.forEach { item ->
-            val selected = currentRoute == item.route
+            val isSavedRoute = item == BottomNavItem.Bookmarks && 
+                             currentRoute == "category/{status}" && 
+                             currentStatus == "SAVED"
+            
+            val selected = currentRoute == item.route || isSavedRoute
 
             NavigationBarItem(
                 selected = selected,

@@ -29,6 +29,10 @@ fun AppDrawer(
     onNavigate: (String) -> Unit,
     onCloseDrawer: () -> Unit
 ) {
+    // Check if the current route is the SAVED category
+    // In a real app, you might want to pass the status as well, 
+    // but for now we can infer it if we are on category/{status}
+
     ModalDrawerSheet(
         drawerContainerColor = Color.White,
         drawerShape = RoundedCornerShape(topEnd = 0.dp, bottomEnd = 0.dp),
@@ -105,8 +109,8 @@ fun AppDrawer(
                 DrawerItem(
                     iconRes = R.drawable.bookmark_ico,
                     label = "Saqlangan kitoblar",
-                    isSelected = currentRoute == "bookmarks",
-                    onClick = { onNavigate("bookmarks"); onCloseDrawer() }
+                    isSelected = currentRoute == "category/{status}", // Simplified, assuming SAVED is the main entry for this from drawer
+                    onClick = { onNavigate("category/SAVED"); onCloseDrawer() }
                 )
             }
             item {

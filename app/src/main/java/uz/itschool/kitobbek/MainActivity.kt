@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -40,7 +41,11 @@ import uz.itschool.kitobbek.ui.screens.profile.ProfileViewModel
 import uz.itschool.kitobbek.ui.screens.details.BookDetailsScreen
 import uz.itschool.kitobbek.ui.screens.details.BookDetailsViewModel
 import uz.itschool.kitobbek.ui.screens.category.CategoryBooksScreen
+import uz.itschool.kitobbek.ui.screens.pdf.PdfReaderScreen
 import uz.itschool.kitobbek.ui.theme.KitobBekTheme
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,6 +162,11 @@ fun AppNavigation() {
                 arguments = listOf(navArgument("status") { type = NavType.StringType })
             ) { backStackEntry ->
                 val status = backStackEntry.arguments?.getString("status") ?: ""
+                
+                LaunchedEffect(status) {
+                    profileViewModel.loadProfileData()
+                }
+
                 val books = when (status) {
                     "READING" -> uiState.readingBooks
                     "READ" -> uiState.readBooks
@@ -169,12 +179,22 @@ fun AppNavigation() {
                     "SAVED" -> "Saqlangan kitoblar"
                     else -> "Kitoblar"
                 }
+                
+                val isSaved = status == "SAVED"
+
                 CategoryBooksScreen(
                     categoryTitle = title,
                     books = books,
-                    onBackClick = { navController.popBackStack() },
+                    onBackClick = { 
+                        if (isSaved) scope.launch { drawerState.open() }
+                        else navController.popBackStack() 
+                    },
                     onBookClick = { bookId ->
                         navController.navigate("details/$bookId")
+                    },
+                    isMainDestination = isSaved,
+                    bottomBar = {
+                        if (isSaved) BottomNavBar(navController = navController)
                     }
                 )
             }
@@ -187,13 +207,45 @@ fun AppNavigation() {
                 BookDetailsScreen(
                     bookId = bookId,
                     viewModel = bookDetailsViewModel,
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
+                    onReadClick = { book ->
+                        val encodedName = URLEncoder.encode(book.name, StandardCharsets.UTF_8.toString())
+                        val encodedUrl = URLEncoder.encode(book.file, StandardCharsets.UTF_8.toString())
+                        navController.navigate("pdf_reader/${book.id}/$encodedName/$encodedUrl")
+                    }
+                )
+            }
+
+            composable(
+                route = "pdf_reader/{bookId}/{bookName}/{bookFile}",
+                arguments = listOf(
+                    navArgument("bookId") { type = NavType.IntType },
+                    navArgument("bookName") { type = NavType.StringType },
+                    navArgument("bookFile") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
+                val bookName = URLDecoder.decode(
+                    backStackEntry.arguments?.getString("bookName") ?: "",
+                    StandardCharsets.UTF_8.toString()
+                )
+                val bookFile = URLDecoder.decode(
+                    backStackEntry.arguments?.getString("bookFile") ?: "",
+                    StandardCharsets.UTF_8.toString()
+                )
+
+                PdfReaderScreen(
+                    bookId = bookId,
+                    bookName = bookName,
+                    bookFile = bookFile,
+                    onBack = { navController.popBackStack() }
                 )
             }
 
             composable("search") {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
+                    containerColor = Color.White,
                     topBar = {
                         TopBar(
                             title = "Qidirish",
@@ -213,7 +265,6 @@ fun AppNavigation() {
                 }
             }
             composable("write")      { /* WriteScreen() */ }
-            composable("bookmarks")  { /* BookmarksScreen() */ }
             composable("language")   { /* LanguageScreen() */ }
         }
     }

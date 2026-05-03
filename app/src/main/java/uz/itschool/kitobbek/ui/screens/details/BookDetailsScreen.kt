@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import uz.itschool.kitobbek.R
+import uz.itschool.kitobbek.data.local.Prefs
+import uz.itschool.kitobbek.data.remote.model.response.BookResponse
+import uz.itschool.kitobbek.ui.screens.pdf.loadProgress
 
 private val NavyDark = Color(0xFF0D1B4B)
 private val LightBlue = Color(0xFFB3E5FC)
@@ -32,9 +36,12 @@ private val LightBlue = Color(0xFFB3E5FC)
 fun BookDetailsScreen(
     bookId: Int,
     viewModel: BookDetailsViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onReadClick: (BookResponse) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val prefs = remember { Prefs(context) }
 
     LaunchedEffect(bookId) {
         viewModel.loadBookDetails(bookId)
@@ -44,7 +51,18 @@ fun BookDetailsScreen(
         containerColor = Color.White,
         bottomBar = {
             if (uiState.book != null) {
-                BottomActionBar()
+                val book = uiState.book!!
+                val savedPage = remember { loadProgress(context, book.id) }
+                val hasStarted = savedPage != -1
+                val progress = if (book.countPage > 0 && hasStarted) 
+                    savedPage.toFloat() / book.countPage.toFloat() 
+                else 0f
+
+                BottomActionBar(
+                    progress = progress,
+                    isStarted = hasStarted,
+                    onClick = { onReadClick(book) }
+                )
             }
         }
     ) { innerPadding ->
@@ -186,9 +204,10 @@ fun BookDetailsScreen(
                             .padding(horizontal = 24.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        val quotesCount = remember(bookId) { prefs.getQuotes(bookId).size }
                         DescriptionTab(text = "Tavsifi", isSelected = true)
                         DescriptionTab(text = "Sharhlar(${uiState.comments.size})", isSelected = false)
-                        DescriptionTab(text = "Iqtiboslar(23)", isSelected = false)
+                        DescriptionTab(text = "Iqtiboslar($quotesCount)", isSelected = false)
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -251,21 +270,66 @@ fun MetaInfoItem(iconRes: Int, text: String) {
 }
 
 @Composable
-fun BottomActionBar() {
-    Button(
-        onClick = { /* TODO: Start reading */ },
+fun BottomActionBar(
+    progress: Float,
+    isStarted: Boolean,
+    onClick: () -> Unit
+) {
+    val safeProgress = progress.coerceIn(0f, 1f)
+    val readPercent = (safeProgress * 100).toInt()
+
+    val rightBg = when {
+        readPercent >= 75 -> Color(0xFFC8F5E0)
+        readPercent >= 40 -> Color(0xFFFFE5B4)
+        else            -> Color(0xFFFFD6D6)
+    }
+    val rightText = when {
+        readPercent >= 75 -> Color(0xFF2E7D32)
+        readPercent >= 40 -> Color(0xFFE65100)
+        else            -> Color(0xFFC62828)
+    }
+
+    val leftWeight = if (isStarted) safeProgress.coerceIn(0.15f, 0.82f) else 1f
+    val rightWeight = 1f - (if (isStarted) leftWeight else 0f)
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(24.dp)
-            .height(56.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = NavyDark),
-        shape = RoundedCornerShape(12.dp)
+            .height(56.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() }
     ) {
-        Text(
-            text = "O'qishni boshlash",
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
+        Box(
+            modifier = Modifier
+                .weight(leftWeight)
+                .fillMaxHeight()
+                .background(NavyDark),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = if (isStarted) "O'qishni davom ettirish" else "O'qishni boshlash",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+        }
+
+        if (isStarted) {
+            Box(
+                modifier = Modifier
+                    .weight(rightWeight)
+                    .fillMaxHeight()
+                    .background(rightBg),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "$readPercent%",
+                    color = rightText,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 15.sp
+                )
+            }
+        }
     }
 }
