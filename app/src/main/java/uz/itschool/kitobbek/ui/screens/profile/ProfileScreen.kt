@@ -4,13 +4,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import uz.itschool.kitobbek.data.local.Prefs
+import uz.itschool.kitobbek.ui.components.TopBar
 
 @Composable
 fun ProfileScreen(
@@ -21,12 +27,18 @@ fun ProfileScreen(
     onBookClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val prefs = remember { Prefs(context) }
+    
+    val userName = prefs.getUserName().ifBlank { uiState.userName }
+    val userEmail = prefs.getUserEmail().ifBlank { uiState.email }
 
     Scaffold(
         topBar = {
-            ProfileTopBar(
-                onBackClick = onBackClick,
-                onSettingsClick = onSettingsClick
+            TopBar(
+                title = "Shaxsiy kabinet",
+                onMenuClick = onBackClick,
+                menuIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         }
     ) { innerPadding ->
@@ -37,6 +49,8 @@ fun ProfileScreen(
         } else {
             ProfileContent(
                 modifier = Modifier.padding(innerPadding),
+                userName = userName,
+                userEmail = userEmail,
                 uiState = uiState,
                 onSeeAllClick = onSeeAllClick,
                 onBookClick = onBookClick
@@ -48,6 +62,8 @@ fun ProfileScreen(
 @Composable
 fun ProfileContent(
     modifier: Modifier = Modifier,
+    userName: String,
+    userEmail: String,
     uiState: ProfileUiState,
     onSeeAllClick: (String) -> Unit,
     onBookClick: (Int) -> Unit
@@ -58,8 +74,8 @@ fun ProfileContent(
     ) {
         item {
             ProfileHeader(
-                userName = uiState.userName,
-                email = uiState.email
+                userName = userName,
+                email = userEmail
             )
         }
 

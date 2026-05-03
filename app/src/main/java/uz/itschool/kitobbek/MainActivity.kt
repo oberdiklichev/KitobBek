@@ -14,8 +14,10 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -24,6 +26,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
+import uz.itschool.kitobbek.data.local.Prefs
+import uz.itschool.kitobbek.ui.screens.auth.LoginScreen
+import uz.itschool.kitobbek.ui.screens.auth.RegisterScreen
+import uz.itschool.kitobbek.ui.screens.auth.WelcomeScreen
 import uz.itschool.kitobbek.ui.screens.search.SearchScreen
 import uz.itschool.kitobbek.ui.screens.home.HomeScreen
 import uz.itschool.kitobbek.ui.components.BottomNavBar
@@ -31,7 +37,6 @@ import uz.itschool.kitobbek.ui.components.TopBar
 import uz.itschool.kitobbek.ui.components.AppDrawer
 import uz.itschool.kitobbek.ui.screens.profile.ProfileScreen
 import uz.itschool.kitobbek.ui.screens.profile.ProfileViewModel
-import uz.itschool.kitobbek.ui.screens.profile.ProfileUiState
 import uz.itschool.kitobbek.ui.screens.category.CategoryBooksScreen
 import uz.itschool.kitobbek.ui.theme.KitobBekTheme
 
@@ -50,6 +55,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val prefs = remember { Prefs(context) }
+    
     val profileViewModel: ProfileViewModel = viewModel()
     val uiState by profileViewModel.uiState.collectAsState()
     
@@ -59,8 +67,11 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val startDestination = if (prefs.isRegistered()) "home" else "welcome"
+
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = currentRoute != "welcome" && currentRoute != "login" && currentRoute != "register",
         drawerContent = {
             AppDrawer(
                 currentRoute = currentRoute,
@@ -79,8 +90,35 @@ fun AppNavigation() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = "home"
+            startDestination = startDestination
         ) {
+            composable("welcome") {
+                WelcomeScreen(
+                    onLoginClick = { navController.navigate("login") },
+                    onRegisterClick = { navController.navigate("register") }
+                )
+            }
+            composable("login") {
+                LoginScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onRegisterClick = { navController.navigate("register") },
+                    onLoginSuccess = { 
+                        navController.navigate("home") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    }
+                )
+            }
+            composable("register") {
+                RegisterScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onRegisterSuccess = {
+                        navController.navigate("home") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    }
+                )
+            }
             composable("home") {
                 HomeScreen(
                     navController = navController,
