@@ -37,7 +37,11 @@ val AccentBlue = Color(0xFF1565C0)
 val LinkColor = Color(0xFF1565C0)
 
 @Composable
-fun HomeScreen(navController: NavController, vm: HomeViewModel = viewModel()) {
+fun HomeScreen(
+    navController: NavController,
+    vm: HomeViewModel = viewModel(),
+    onMenuClick: () -> Unit
+) {
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Barchasi") }
@@ -48,7 +52,7 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = viewModel()) {
         topBar = {
             TopBar(
                 title = "Bosh Sahifa",
-                onMenuClick = { /*TODO*/ },
+                onMenuClick = onMenuClick,
                 onProfileClick = { navController.navigate("profile") }
             )
         },
