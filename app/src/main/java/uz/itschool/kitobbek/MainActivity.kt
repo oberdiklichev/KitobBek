@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import uz.itschool.kitobbek.ui.screens.search.SearchScreen
 import uz.itschool.kitobbek.ui.screens.home.HomeScreen
+import uz.itschool.kitobbek.ui.components.BottomNavBar
 import uz.itschool.kitobbek.ui.screens.profile.ProfileScreen
 import uz.itschool.kitobbek.ui.screens.profile.ProfileViewModel
 import uz.itschool.kitobbek.ui.screens.profile.ProfileUiState
@@ -46,7 +47,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "search"
+        startDestination = "home"
     ) {
         composable("home") {
             HomeScreen(navController = navController)
@@ -94,7 +95,10 @@ fun AppNavigation() {
         }
 
         composable("search") {
-            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                bottomBar = { BottomNavBar(navController = navController) }
+            ) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding)) {
                     SearchScreen()
                 }
