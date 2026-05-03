@@ -21,6 +21,7 @@ import androidx.navigation.navArgument
 import uz.itschool.kitobbek.ui.screens.search.SearchScreen
 import uz.itschool.kitobbek.ui.screens.home.HomeScreen
 import uz.itschool.kitobbek.ui.components.BottomNavBar
+import uz.itschool.kitobbek.ui.components.TopBar
 import uz.itschool.kitobbek.ui.screens.profile.ProfileScreen
 import uz.itschool.kitobbek.ui.screens.profile.ProfileViewModel
 import uz.itschool.kitobbek.ui.screens.profile.ProfileUiState
@@ -97,6 +98,13 @@ fun AppNavigation() {
         composable("search") {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
+                topBar = {
+                    TopBar(
+                        title = "Qidirish",
+                        onMenuClick = { /*TODO*/ },
+                        onProfileClick = { navController.navigate("profile") }
+                    )
+                },
                 bottomBar = { BottomNavBar(navController = navController) }
             ) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding)) {

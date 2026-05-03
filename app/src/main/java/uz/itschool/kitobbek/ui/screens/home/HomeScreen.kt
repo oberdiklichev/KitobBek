@@ -8,11 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,6 +30,7 @@ import uz.itschool.kitobbek.data.remote.model.response.CategoryResponse
 import uz.itschool.kitobbek.ui.components.BookCardItem
 import uz.itschool.kitobbek.ui.components.BookCoverItem
 import uz.itschool.kitobbek.ui.components.BottomNavBar
+import uz.itschool.kitobbek.ui.components.TopBar
 
 val NavyDark = Color(0xFF0D1B4B)
 val AccentBlue = Color(0xFF1565C0)
@@ -49,6 +47,7 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = viewModel()) {
         containerColor = Color.White,
         topBar = {
             TopBar(
+                title = "Bosh Sahifa",
                 onMenuClick = { /*TODO*/ },
                 onProfileClick = { navController.navigate("profile") }
             )
@@ -131,46 +130,6 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel = viewModel()) {
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun TopBar(onMenuClick: () -> Unit, onProfileClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        IconButton(onClick = onMenuClick) {
-            Icon(
-                imageVector = Icons.Default.Menu,
-                contentDescription = null,
-                tint = Color.Black
-            )
-        }
-
-        Text(
-            text = "Bosh Sahifa",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Box(
-            modifier = Modifier
-                .size(38.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFE8EAF6))
-                .clickable { onProfileClick() },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
-                tint = NavyDark
-            )
         }
     }
 }
